@@ -14,3 +14,6 @@ For detailed issue descriptions, implementation paths, and remedy comments, see 
 | **#6** | Interactive Codebase Deletion | Workspace | `RESOLVED` | Close `[x]` button directly on active codebase pills |
 | **#7** | Hero Mode Selector Segment Cards | UI / Page | `RESOLVED` | Large selector cards separating Forecast and Actual plans |
 | **#8** | Subscription Account Tiers Setup | Plans | `RESOLVED` | Google Pro, Claude Free, and GPT Free out of the box |
+| **#9** | DeepSeek Peak-Valley Pricing Advisory | Tips | `RESOLVED` | Advisory alert callout widget added to TipsCard |
+| **#10** | Dark Mode & Pro Blue Theme Switcher | UI | `RESOLVED` | Dropdown theme switcher using CSS custom classes |
+

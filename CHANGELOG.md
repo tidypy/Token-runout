@@ -96,7 +96,10 @@ Tracked feature additions, enhancements, and remedies implemented for **Token Ru
 - **Feat**: Prominent segmented Hero Mode Switcher cards (Forecast vs Actual Plans).
 - **Feat**: Capability to remove a codebase directly from filter pills (`[x]`).
 - **Feat**: Seeded Google Pro Plan, Claude Free, and GPT Free subscription accounts.
+- **Feat**: DeepSeek Peak-Valley pricing advisory warning widget in TipsCard.
+- **Feat**: Dark mode & Pro Blue CMS theme switcher toggles.
 - **Fix**: Removed forced automatic simulation data for fresh codebase views.
+
 
 ### v0.2.0 (2026-08-01)
 - **Feat**: Provider Rate Limit & Quota Telemetry (5-Hour & Weekly Limits).

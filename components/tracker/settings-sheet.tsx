@@ -6,11 +6,11 @@ import {
   DownloadIcon,
   KeyIcon,
   RadioIcon,
-  RotateCcwIcon,
   SettingsIcon,
   Trash2Icon,
   UploadIcon,
 } from "lucide-react"
+
 import { toast } from "sonner"
 
 import { Badge } from "@/components/ui/badge"
@@ -190,24 +190,7 @@ export function SettingsSheet({ tracker }: { tracker: Tracker }) {
               </Button>
             </Field>
 
-            <FieldSeparator />
 
-            <Field>
-              <FieldLabel>Demo data</FieldLabel>
-              <FieldDescription>Replace everything with fresh sample quotas, models, and Git diff history.</FieldDescription>
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-fit"
-                onClick={() => {
-                  tracker.resetDemo()
-                  toast("Demo data restored")
-                }}
-              >
-                <RotateCcwIcon data-icon="inline-start" />
-                Reset demo data
-              </Button>
-            </Field>
 
             <Field>
               <FieldLabel>Danger zone</FieldLabel>

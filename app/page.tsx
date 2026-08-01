@@ -31,7 +31,9 @@ import { ModelCard } from "@/components/tracker/model-card"
 import { PricingTable } from "@/components/tracker/pricing-table"
 import { QuotaCard } from "@/components/tracker/quota-card"
 import { SettingsSheet } from "@/components/tracker/settings-sheet"
+import { ThemeSwitcher } from "@/components/tracker/theme-switcher"
 import { TipsCard } from "@/components/tracker/tips-card"
+
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -163,12 +165,14 @@ export default function Page() {
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
+            <ThemeSwitcher />
             <Button
               variant={widgetMode ? "secondary" : "outline"}
               size="sm"
               onClick={() => setWidgetMode(!widgetMode)}
               className="gap-1.5"
             >
+
               {widgetMode ? (
                 <>
                   <Maximize2Icon className="size-3.5" />

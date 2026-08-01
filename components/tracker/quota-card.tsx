@@ -34,10 +34,8 @@ export function QuotaCard({
   const isExhausted = quota.fiveHourLimit.usedPct >= 100 || quota.weeklyLimit.usedPct >= 100
   const isWarning = fiveHourStatus === "warning" || weeklyStatus === "warning"
 
-  const hasApiKey = Boolean(quota.apiKey && quota.apiKey.trim().length > 0)
-  const maskedKey = hasApiKey
-    ? `${quota.apiKey!.slice(0, 4)}••••${quota.apiKey!.slice(-4)}`
-    : null
+  const keysList = quota.apiKeys || (quota.apiKey ? [{ id: "legacy-1", name: "Primary Key", key: quota.apiKey, createdAt: "" }] : [])
+  const hasApiKeys = keysList.length > 0
 
   return (
     <Card className="gap-3 border-border/60 bg-card/65 py-4 shadow-sm backdrop-blur-xl transition-all hover:border-border/90">
@@ -94,22 +92,31 @@ export function QuotaCard({
       </CardHeader>
 
       <CardContent className="flex flex-col gap-4 px-4 pt-1">
-        {/* API Key Connection Status Banner */}
+        {/* Multi-API Key Connection Banner */}
         {quota.connectionMode === "api-key" && (
-          <div className="flex items-center justify-between rounded-md border border-primary/30 bg-primary/10 px-3 py-1.5 text-[11px]">
-            <div className="flex items-center gap-1.5 font-medium text-foreground">
-              <ShieldCheckIcon className="size-3.5 text-primary" />
-              <span>
-                {hasApiKey ? (
-                  <>Direct API Key Connected <span className="font-mono text-muted-foreground">({maskedKey})</span></>
-                ) : (
-                  <>Direct API Key Mode (Key not set in Settings)</>
-                )}
-              </span>
+          <div className="flex flex-col gap-1.5 rounded-md border border-primary/30 bg-primary/10 px-3 py-2 text-[11px]">
+            <div className="flex items-center justify-between font-medium text-foreground">
+              <div className="flex items-center gap-1.5">
+                <ShieldCheckIcon className="size-3.5 text-primary" />
+                <span>Direct API Connection</span>
+              </div>
+              <Badge variant="outline" className="text-[9px] font-mono border-primary/40 text-primary">
+                {hasApiKeys ? `🟢 ${keysList.length} Active Key${keysList.length > 1 ? "s" : ""}` : "🔑 Needs Key"}
+              </Badge>
             </div>
-            <Badge variant="outline" className="text-[9px] font-mono border-primary/40 text-primary">
-              {hasApiKey ? "🟢 Live Sync" : "🔑 Needs Key"}
-            </Badge>
+
+            {hasApiKeys ? (
+              <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                {keysList.map((k) => (
+                  <Badge key={k.id} variant="secondary" className="text-[9px] font-mono bg-background/70">
+                    <KeyIcon className="mr-1 size-2.5 text-primary" />
+                    {k.name}: {k.key.slice(0, 3)}••••{k.key.slice(-3)}
+                  </Badge>
+                ))}
+              </div>
+            ) : (
+              <span className="text-[10px] text-muted-foreground">Add API keys in Settings to connect project limits.</span>
+            )}
           </div>
         )}
 

@@ -8,19 +8,27 @@ export type ProviderId =
 
 export type ConnectionMode = "api-key" | "local-telemetry"
 
+export interface ApiKeyEntry {
+  id: string
+  name: string
+  key: string
+  createdAt: string
+}
+
 export interface ProviderQuota {
   providerId: ProviderId
   providerName: string
   connectionMode: ConnectionMode
   weeklyLimit: {
-    usedPct: number // e.g. 53 for 53%
-    refreshText: string // e.g. "5 days" or "4 days, 19 hours"
+    usedPct: number
+    refreshText: string
   }
   fiveHourLimit: {
-    usedPct: number // e.g. 93 for 93% or 100 for 100%
-    refreshText: string // e.g. "2 hours, 1 minute"
+    usedPct: number
+    refreshText: string
   }
   apiKey?: string
+  apiKeys?: ApiKeyEntry[]
   lastSync: string
 }
 

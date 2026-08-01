@@ -155,6 +155,53 @@ export function useTracker() {
     [update],
   )
 
+  const addApiKey = React.useCallback(
+    (providerId: ProviderId, name: string, key: string) => {
+      update((prev) => ({
+        ...prev,
+        quotas: prev.quotas.map((q) => {
+          if (q.providerId !== providerId) return q
+          const newEntry = {
+            id: makeId(),
+            name: name.trim() || `API Key ${(q.apiKeys?.length || 0) + 1}`,
+            key: key.trim(),
+            createdAt: new Date().toISOString(),
+          }
+          const existingKeys = q.apiKeys || []
+          return {
+            ...q,
+            connectionMode: "api-key",
+            apiKey: key.trim(),
+            apiKeys: [...existingKeys, newEntry],
+            lastSync: new Date().toISOString(),
+          }
+        }),
+      }))
+    },
+    [update],
+  )
+
+  const removeApiKey = React.useCallback(
+    (providerId: ProviderId, keyId: string) => {
+      update((prev) => ({
+        ...prev,
+        quotas: prev.quotas.map((q) => {
+          if (q.providerId !== providerId) return q
+          const remainingKeys = (q.apiKeys || []).filter((k) => k.id !== keyId)
+          const primaryKey = remainingKeys.length > 0 ? remainingKeys[remainingKeys.length - 1].key : undefined
+          return {
+            ...q,
+            apiKeys: remainingKeys,
+            apiKey: primaryKey,
+            lastSync: new Date().toISOString(),
+          }
+        }),
+      }))
+    },
+    [update],
+  )
+
+
   const addGitHotspot = React.useCallback(
     (input: { filePath: string; codebase: string; changeCount: number; linesAdded: number; linesDeleted: number }) => {
       update((prev) => {
@@ -208,6 +255,8 @@ export function useTracker() {
     addCodebase,
     removeCodebase,
     toggleQuotaConnectionMode,
+    addApiKey,
+    removeApiKey,
     addGitHotspot,
     exportData,
     importData,

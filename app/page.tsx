@@ -185,11 +185,11 @@ export default function Page() {
                 </>
               )}
             </Button>
-            <AddModelSheet onAdd={addModel} />
             <SettingsSheet tracker={tracker} />
           </div>
         </div>
       </header>
+
 
       {/* Overview Stat Cards */}
       <section className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -456,9 +456,13 @@ export default function Page() {
                   Tracks overall usage for subscription accounts (Google Pro Plan, Claude Pro, ChatGPT Team) without confusing model API keys.
                 </p>
               </div>
-              <Badge variant="secondary" className="text-[10px] font-mono">
-                Simplified Account View
-              </Badge>
+              <div className="flex items-center gap-2">
+                <Badge variant="secondary" className="text-[10px] font-mono hidden sm:inline-flex">
+                  Simplified Account View
+                </Badge>
+                <AddModelSheet onAdd={addModel} />
+              </div>
+
             </div>
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">

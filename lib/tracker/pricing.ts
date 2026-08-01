@@ -26,13 +26,16 @@ export const PROVIDERS: Record<ProviderId, { label: string; short: string }> = {
 export const PRICING_CATALOG: ModelPricing[] = [
   // Google Plans & Models
   { provider: "google", modelId: "google-pro-plan", label: "Google Gemini Pro Plan", inputPerM: 1.25, outputPerM: 10.0, cachedInputPerM: 0.31 },
+  { provider: "google", modelId: "google-free-tier", label: "Google AI Free Tier", inputPerM: 0.0, outputPerM: 0.0 },
   { provider: "google", modelId: "gemini-2.5-pro", label: "Gemini 2.5 Pro", inputPerM: 1.25, outputPerM: 10.0, cachedInputPerM: 0.31 },
   { provider: "google", modelId: "gemini-2.5-flash", label: "Gemini 2.5 Flash", inputPerM: 0.3, outputPerM: 2.5, cachedInputPerM: 0.075 },
   // Anthropic Plans & Models
   { provider: "anthropic", modelId: "claude-pro-plan", label: "Claude Pro Plan", inputPerM: 3.0, outputPerM: 15.0, cachedInputPerM: 0.3 },
+  { provider: "anthropic", modelId: "claude-free-tier", label: "Claude Free Tier", inputPerM: 0.0, outputPerM: 0.0 },
   { provider: "anthropic", modelId: "claude-sonnet-4.5", label: "Claude Sonnet 4.5", inputPerM: 3.0, outputPerM: 15.0, cachedInputPerM: 0.3 },
   { provider: "anthropic", modelId: "claude-opus-4.5", label: "Claude Opus 4.5", inputPerM: 5.0, outputPerM: 25.0, cachedInputPerM: 0.5 },
   // OpenAI Plans & Models
+  { provider: "openai", modelId: "gpt-free-tier", label: "ChatGPT Free Tier", inputPerM: 0.0, outputPerM: 0.0 },
   { provider: "openai", modelId: "openai-team-plan", label: "ChatGPT / OpenAI Team Plan", inputPerM: 2.0, outputPerM: 8.0, cachedInputPerM: 0.5 },
   { provider: "openai", modelId: "gpt-4.1", label: "GPT-4.1", inputPerM: 2.0, outputPerM: 8.0, cachedInputPerM: 0.5 },
   { provider: "openai", modelId: "gpt-4o", label: "GPT-4o", inputPerM: 2.5, outputPerM: 10.0, cachedInputPerM: 1.25 },

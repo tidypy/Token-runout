@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { PlusIcon } from "lucide-react"
+import { PlusIcon, ZapIcon } from "lucide-react"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
@@ -37,10 +37,10 @@ const PROVIDER_IDS = Object.keys(PROVIDERS) as ProviderId[]
 
 export function AddModelSheet({ onAdd }: { onAdd: (input: NewModelInput) => void }) {
   const [open, setOpen] = React.useState(false)
-  const [provider, setProvider] = React.useState<ProviderId>("openai")
-  const [modelId, setModelId] = React.useState<string>("gpt-4.1-mini")
-  const [codebase, setCodebase] = React.useState("")
-  const [budget, setBudget] = React.useState("50")
+  const [provider, setProvider] = React.useState<ProviderId>("google")
+  const [modelId, setModelId] = React.useState<string>("google-pro-plan")
+  const [codebase, setCodebase] = React.useState("Token-runout")
+  const [budget, setBudget] = React.useState("100")
   const [warnDays, setWarnDays] = React.useState("7")
   const [expIn, setExpIn] = React.useState("")
   const [expOut, setExpOut] = React.useState("")
@@ -57,9 +57,9 @@ export function AddModelSheet({ onAdd }: { onAdd: (input: NewModelInput) => void
 
   function submit(e: React.FormEvent) {
     e.preventDefault()
-    const budgetUsd = Number(budget)
-    if (!modelId || !codebase.trim() || !budgetUsd || budgetUsd <= 0) {
-      toast("Fill in model, codebase, and a positive budget")
+    const budgetUsd = Number(budget) || 0
+    if (!modelId || !codebase.trim()) {
+      toast("Select a provider, plan/model, and codebase")
       return
     }
     onAdd({
@@ -71,29 +71,28 @@ export function AddModelSheet({ onAdd }: { onAdd: (input: NewModelInput) => void
       expectedDailyInputTokens: Number(expIn) || undefined,
       expectedDailyOutputTokens: Number(expOut) || undefined,
     })
-    setCodebase("")
-    setExpIn("")
-    setExpOut("")
     setOpen(false)
-    toast("Model added — forecasting is on")
+    toast("Account plan added — forecasting enabled")
   }
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger
         render={
-          <Button size="sm">
-            <PlusIcon data-icon="inline-start" />
-            Track model
+          <Button size="sm" className="gap-1">
+            <PlusIcon className="size-3.5" />
+            <span>Track Plan</span>
           </Button>
         }
       />
       <SheetContent side="right" className="w-full sm:max-w-sm">
         <SheetHeader>
-          <SheetTitle>Track a model</SheetTitle>
+          <SheetTitle className="flex items-center gap-2">
+            <ZapIcon className="size-4 text-warning" />
+            Track Subscription Plan / Model
+          </SheetTitle>
           <SheetDescription>
-            Every model gets an automatic runway forecast. Add expected daily tokens to bootstrap the estimate before
-            real usage exists.
+            Select your provider subscription tier (e.g. Google Pro Plan, Claude Free Tier, ChatGPT Free Tier) or API model.
           </SheetDescription>
         </SheetHeader>
         <form onSubmit={submit} className="flex flex-1 flex-col gap-4 overflow-y-auto px-4">
@@ -119,8 +118,9 @@ export function AddModelSheet({ onAdd }: { onAdd: (input: NewModelInput) => void
                 </SelectContent>
               </Select>
             </Field>
+
             <Field>
-              <FieldLabel>Model</FieldLabel>
+              <FieldLabel>Plan / Model</FieldLabel>
               <Select
                 value={modelId}
                 onValueChange={(v) => v && setModelId(v as string)}
@@ -139,26 +139,29 @@ export function AddModelSheet({ onAdd }: { onAdd: (input: NewModelInput) => void
                   </SelectGroup>
                 </SelectContent>
               </Select>
-              <FieldDescription>Pricing is pulled from the live catalog automatically.</FieldDescription>
+              <FieldDescription>Choose your active plan tier (Pro, Free Tier, Team).</FieldDescription>
             </Field>
+
             <Field>
               <FieldLabel htmlFor="codebase">Codebase</FieldLabel>
               <Input
                 id="codebase"
-                placeholder="e.g. acme-web"
+                placeholder="e.g. Token-runout"
                 value={codebase}
                 onChange={(e) => setCodebase(e.target.value)}
               />
-              <FieldDescription>Budgets are tracked per codebase.</FieldDescription>
+              <FieldDescription>Codebase or project name for budget allocation.</FieldDescription>
             </Field>
+
             <div className="grid grid-cols-2 gap-3">
               <Field>
                 <FieldLabel htmlFor="budget">Budget (USD)</FieldLabel>
                 <Input
                   id="budget"
                   type="number"
-                  min={1}
-                  step="0.01"
+                  min={0}
+                  step="1"
+                  placeholder="0 for free plans"
                   value={budget}
                   onChange={(e) => setBudget(e.target.value)}
                 />
@@ -174,33 +177,9 @@ export function AddModelSheet({ onAdd }: { onAdd: (input: NewModelInput) => void
                 />
               </Field>
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <Field>
-                <FieldLabel htmlFor="exp-in">Est. daily input</FieldLabel>
-                <Input
-                  id="exp-in"
-                  type="number"
-                  min={0}
-                  placeholder="tokens"
-                  value={expIn}
-                  onChange={(e) => setExpIn(e.target.value)}
-                />
-              </Field>
-              <Field>
-                <FieldLabel htmlFor="exp-out">Est. daily output</FieldLabel>
-                <Input
-                  id="exp-out"
-                  type="number"
-                  min={0}
-                  placeholder="tokens"
-                  value={expOut}
-                  onChange={(e) => setExpOut(e.target.value)}
-                />
-              </Field>
-            </div>
           </FieldGroup>
           <SheetFooter className="px-0">
-            <Button type="submit">Start tracking</Button>
+            <Button type="submit">Start Tracking Plan</Button>
           </SheetFooter>
         </form>
       </SheetContent>

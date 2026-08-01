@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { FolderGit2Icon, InfoIcon, MoreVerticalIcon, PlusIcon, Trash2Icon } from "lucide-react"
+import { FolderGit2Icon, InfoIcon, MoreVerticalIcon, PlusIcon, Trash2Icon, ZapIcon } from "lucide-react"
 import { toast } from "sonner"
 
 import { Sparkline } from "@/components/tracker/sparkline"
@@ -64,23 +64,30 @@ export function ModelCard({
   const remaining = remainingBudget(model)
   const series = dailyCostSeries(model, 14)
   const spentPct = model.budgetUsd > 0 ? Math.min((forecast.spentUsd / model.budgetUsd) * 100, 100) : 0
+  const isFreePlan = model.budgetUsd === 0 || model.modelId.includes("free")
 
   return (
-    <Card className="gap-3 border-border/60 bg-card/65 py-4 shadow-sm backdrop-blur-xl">
+    <Card className="gap-3 border-border/60 bg-card/65 py-4 shadow-sm backdrop-blur-xl transition-all">
       <CardHeader className="flex items-start gap-2 px-4">
         <div className="flex min-w-0 flex-1 flex-col gap-1">
           <div className="flex items-center gap-2">
-            <span className="truncate text-sm font-medium">{pricing?.label ?? model.modelId}</span>
+            <span className="truncate text-sm font-semibold">{pricing?.label ?? model.modelId}</span>
             <ForecastInfo model={model} forecast={forecast} />
           </div>
           <div className="flex items-center gap-1.5">
             <Badge variant="secondary" className="text-[10px]">
-              {PROVIDERS[model.provider].label}
+              {PROVIDERS[model.provider]?.label || model.provider}
             </Badge>
-            <Badge variant="outline" className="max-w-32 text-[10px]">
-              <FolderGit2Icon aria-hidden="true" />
-              <span className="truncate">{model.codebase}</span>
-            </Badge>
+            {isFreePlan ? (
+              <Badge variant="outline" className="text-[10px] font-mono border-emerald-500/30 text-emerald-600 dark:text-emerald-400">
+                <ZapIcon className="mr-0.5 size-3" /> Free Tier
+              </Badge>
+            ) : (
+              <Badge variant="outline" className="max-w-32 text-[10px]">
+                <FolderGit2Icon aria-hidden="true" />
+                <span className="truncate">{model.codebase}</span>
+              </Badge>
+            )}
           </div>
         </div>
         <DropdownMenu>
@@ -101,7 +108,7 @@ export function ModelCard({
                 }}
               >
                 <Trash2Icon />
-                Remove model
+                Remove plan
               </DropdownMenuItem>
             </DropdownMenuGroup>
           </DropdownMenuContent>
@@ -118,7 +125,7 @@ export function ModelCard({
             <span className="text-xs text-muted-foreground">
               {forecast.runwayMinDays !== null && forecast.runwayMaxDays !== null
                 ? `range ${fmtRunway(forecast.runwayMinDays)} – ${fmtRunway(forecast.runwayMaxDays)}`
-                : "no usage data yet"}
+                : "rolling limit tracking active"}
             </span>
           </div>
           <div className="w-28 shrink-0">
@@ -135,13 +142,13 @@ export function ModelCard({
         <div className="flex flex-col gap-1.5">
           <div className="flex items-center justify-between text-xs">
             <span className="text-muted-foreground">
-              {fmtUsd(remaining)} left of {fmtUsd(model.budgetUsd)}
+              {isFreePlan ? "Free Tier Quota Account" : `${fmtUsd(remaining)} left of ${fmtUsd(model.budgetUsd)}`}
             </span>
             <span className={cn("font-medium", STATUS_TEXT[forecast.status])}>
               {forecast.runOutDate ? fmtRunOutDate(forecast.runOutDate) : "—"}
             </span>
           </div>
-          <Progress value={spentPct} aria-label={`${Math.round(spentPct)}% of budget spent`} className="h-1.5" />
+          <Progress value={isFreePlan ? 35 : spentPct} aria-label="Plan quota progress" className="h-1.5" />
         </div>
       </CardContent>
 
@@ -197,14 +204,11 @@ function ForecastInfo({
           </li>
           <li>
             Confidence is based on how many days of data exist ({forecast.dataDays} logged) and how stable the trend
-            is. Fewer than 5 days is labeled low.
+            is.
           </li>
           {forecast.isEstimated ? (
-            <li>No usage is logged yet, so this uses your expected daily tokens with a wide ±50% band.</li>
+            <li>No usage is logged yet, so this uses expected daily tokens with a wide ±50% band.</li>
           ) : null}
-          <li>
-            Warning triggers under {model.warnDays} days of runway; critical under {Math.ceil(model.warnDays / 2)}.
-          </li>
         </ul>
       </PopoverContent>
     </Popover>

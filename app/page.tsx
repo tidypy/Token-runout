@@ -57,6 +57,7 @@ export default function Page() {
     logUsage,
     addCodebase,
     toggleQuotaConnectionMode,
+    addGitHotspot,
   } = tracker
 
   // Extract list of unique codebases combining tracked models & added codebases
@@ -342,6 +343,7 @@ export default function Page() {
             <GitHotspots
               hotspots={gitHotspots}
               selectedCodebase={selectedCodebase}
+              onAddHotspot={addGitHotspot}
             />
 
             {/* GitHub Auth & Remote Sync Card */}

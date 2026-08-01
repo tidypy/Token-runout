@@ -119,44 +119,9 @@ export function useTracker() {
           createdAt: now,
         }
 
-        // Auto-generate realistic file hotspots for the added codebase folder
-        const generatedHotspots: GitFileHotspot[] = [
-          {
-            id: makeId(),
-            filePath: `src/components/main-view.tsx`,
-            codebase: cbName,
-            changeCount: 15,
-            linesAdded: 280,
-            linesDeleted: 85,
-            estimatedTokens: estimateTokensFromDiff(280, 85),
-            lastModified: now,
-          },
-          {
-            id: makeId(),
-            filePath: `src/lib/api-client.ts`,
-            codebase: cbName,
-            changeCount: 11,
-            linesAdded: 190,
-            linesDeleted: 40,
-            estimatedTokens: estimateTokensFromDiff(190, 40),
-            lastModified: now,
-          },
-          {
-            id: makeId(),
-            filePath: `src/hooks/use-data.ts`,
-            codebase: cbName,
-            changeCount: 8,
-            linesAdded: 130,
-            linesDeleted: 25,
-            estimatedTokens: estimateTokensFromDiff(130, 25),
-            lastModified: now,
-          },
-        ]
-
         return {
           ...prev,
           codebases: [...prev.codebases, newCodebase],
-          gitHotspots: [...generatedHotspots, ...prev.gitHotspots],
         }
       })
     },
@@ -173,6 +138,28 @@ export function useTracker() {
             : q,
         ),
       }))
+    },
+    [update],
+  )
+
+  const addGitHotspot = React.useCallback(
+    (input: { filePath: string; codebase: string; changeCount: number; linesAdded: number; linesDeleted: number }) => {
+      update((prev) => {
+        const newHotspot: GitFileHotspot = {
+          id: makeId(),
+          filePath: input.filePath.trim(),
+          codebase: input.codebase.trim(),
+          changeCount: input.changeCount,
+          linesAdded: input.linesAdded,
+          linesDeleted: input.linesDeleted,
+          estimatedTokens: estimateTokensFromDiff(input.linesAdded, input.linesDeleted),
+          lastModified: new Date().toISOString(),
+        }
+        return {
+          ...prev,
+          gitHotspots: [newHotspot, ...prev.gitHotspots],
+        }
+      })
     },
     [update],
   )
@@ -207,6 +194,7 @@ export function useTracker() {
     logUsage,
     addCodebase,
     toggleQuotaConnectionMode,
+    addGitHotspot,
     exportData,
     importData,
     resetDemo,

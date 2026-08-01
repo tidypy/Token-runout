@@ -1,8 +1,79 @@
 import type { CodebaseInfo, GitFileHotspot } from "./types"
 
+function makeId(): string {
+  return Math.random().toString(36).slice(2, 10)
+}
+
+export function generateHotspotsForRepo(codebaseName: string): GitFileHotspot[] {
+  const now = new Date().toISOString()
+  const cleanName = codebaseName.split("/").pop() || codebaseName
+
+  return [
+    {
+      id: makeId(),
+      filePath: "app/page.tsx",
+      codebase: codebaseName,
+      changeCount: 19,
+      linesAdded: 435,
+      linesDeleted: 120,
+      estimatedTokens: 990000,
+      lastModified: now,
+    },
+    {
+      id: makeId(),
+      filePath: "components/tracker/github-auth-card.tsx",
+      codebase: codebaseName,
+      changeCount: 12,
+      linesAdded: 210,
+      linesDeleted: 45,
+      estimatedTokens: 575000,
+      lastModified: now,
+    },
+    {
+      id: makeId(),
+      filePath: "lib/tracker/forecast.ts",
+      codebase: codebaseName,
+      changeCount: 9,
+      linesAdded: 160,
+      linesDeleted: 30,
+      estimatedTokens: 425000,
+      lastModified: now,
+    },
+    {
+      id: makeId(),
+      filePath: "hooks/use-tracker.ts",
+      codebase: codebaseName,
+      changeCount: 8,
+      linesAdded: 140,
+      linesDeleted: 25,
+      estimatedTokens: 370000,
+      lastModified: now,
+    },
+    {
+      id: makeId(),
+      filePath: "components/tracker/quota-card.tsx",
+      codebase: codebaseName,
+      changeCount: 6,
+      linesAdded: 115,
+      linesDeleted: 18,
+      estimatedTokens: 290000,
+      lastModified: now,
+    },
+  ]
+}
+
 export function getDefaultCodebases(): CodebaseInfo[] {
   const now = new Date().toISOString()
   return [
+    {
+      id: "cb-0",
+      name: "Token-runout",
+      path: "https://github.com/tidypy/Token-runout.git",
+      fileCount: 67,
+      totalLines: 16777,
+      gitBranch: "main",
+      createdAt: now,
+    },
     {
       id: "cb-1",
       name: "acme-web",
@@ -30,21 +101,42 @@ export function getDefaultCodebases(): CodebaseInfo[] {
       gitBranch: "main",
       createdAt: now,
     },
-    {
-      id: "cb-4",
-      name: "batch-jobs",
-      path: "/Users/dev/apps/batch-jobs",
-      fileCount: 22,
-      totalLines: 2900,
-      gitBranch: "master",
-      createdAt: now,
-    },
   ]
 }
 
 export function getDefaultGitHotspots(): GitFileHotspot[] {
   const now = new Date().toISOString()
   return [
+    {
+      id: "gh-0a",
+      filePath: "app/page.tsx",
+      codebase: "Token-runout",
+      changeCount: 19,
+      linesAdded: 435,
+      linesDeleted: 120,
+      estimatedTokens: 990000,
+      lastModified: now,
+    },
+    {
+      id: "gh-0b",
+      filePath: "components/tracker/github-auth-card.tsx",
+      codebase: "Token-runout",
+      changeCount: 12,
+      linesAdded: 210,
+      linesDeleted: 45,
+      estimatedTokens: 575000,
+      lastModified: now,
+    },
+    {
+      id: "gh-0c",
+      filePath: "lib/tracker/forecast.ts",
+      codebase: "Token-runout",
+      changeCount: 9,
+      linesAdded: 160,
+      linesDeleted: 30,
+      estimatedTokens: 425000,
+      lastModified: now,
+    },
     {
       id: "gh-1",
       filePath: "src/components/dashboard/analytics-view.tsx",
@@ -85,23 +177,12 @@ export function getDefaultGitHotspots(): GitFileHotspot[] {
       estimatedTokens: 270000,
       lastModified: now,
     },
-    {
-      id: "gh-5",
-      filePath: "jobs/embedding_worker.go",
-      codebase: "batch-jobs",
-      changeCount: 7,
-      linesAdded: 110,
-      linesDeleted: 15,
-      estimatedTokens: 210000,
-      lastModified: now,
-    },
   ]
 }
 
 export function estimateTokensFromDiff(linesAdded: number, linesDeleted: number, fileCount = 1): number {
-  // Rough developer prompt token estimation based on diff changes + context overhead
   const diffLines = linesAdded + linesDeleted
   const avgTokensPerLine = 12
-  const contextMultiplier = 15 // AI context window re-reading factor
+  const contextMultiplier = 15
   return Math.round(diffLines * avgTokensPerLine * contextMultiplier * fileCount)
 }

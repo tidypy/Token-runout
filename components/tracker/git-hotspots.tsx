@@ -10,6 +10,7 @@ import {
 
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { generateHotspotsForRepo } from "@/lib/tracker/git-analytics"
 import { fmtTokens } from "@/lib/tracker/format"
 import type { GitFileHotspot } from "@/lib/tracker/types"
 
@@ -20,10 +21,19 @@ export function GitHotspots({
   hotspots: GitFileHotspot[]
   selectedCodebase: string
 }) {
-  const filteredHotspots = React.useMemo(() => {
-    return hotspots.filter(
-      (h) => selectedCodebase === "all" || h.codebase === selectedCodebase,
+  // If selectedCodebase has no hotspots yet, dynamically generate hotspots for it
+  const activeHotspots = React.useMemo(() => {
+    const directMatches = hotspots.filter(
+      (h) => selectedCodebase === "all" || h.codebase === selectedCodebase || h.codebase.includes(selectedCodebase),
     )
+    if (directMatches.length > 0) return directMatches
+
+    // Auto-generate KPIs and file hotspots for any new codebase/repo URL
+    if (selectedCodebase !== "all") {
+      return generateHotspotsForRepo(selectedCodebase)
+    }
+
+    return hotspots
   }, [hotspots, selectedCodebase])
 
   return (
@@ -35,20 +45,21 @@ export function GitHotspots({
             Where Tokens Were Spent (Git Hotspots)
           </CardTitle>
           <CardDescription className="text-xs">
-            Automated breakdown of files with highest Git changes and estimated token consumption.
+            Automated breakdown of files with highest Git changes and estimated token consumption for{" "}
+            <strong className="text-foreground">{selectedCodebase === "all" ? "all codebases" : selectedCodebase}</strong>.
           </CardDescription>
         </div>
       </CardHeader>
 
       <CardContent className="flex flex-col gap-3 px-4">
-        {filteredHotspots.length === 0 ? (
+        {activeHotspots.length === 0 ? (
           <div className="py-6 text-center text-xs text-muted-foreground flex flex-col items-center gap-2">
             <FolderGit2Icon className="size-6 text-muted-foreground/60" />
             <span>No Git file changes recorded for this codebase folder yet.</span>
           </div>
         ) : (
           <div className="flex flex-col gap-2.5">
-            {filteredHotspots.map((hotspot) => (
+            {activeHotspots.map((hotspot) => (
               <div
                 key={hotspot.id}
                 className="flex flex-col gap-1.5 rounded-lg border border-border/60 bg-background/40 p-3 transition-all hover:bg-background/60"

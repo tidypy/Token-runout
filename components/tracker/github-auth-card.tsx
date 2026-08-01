@@ -23,8 +23,10 @@ import { Input } from "@/components/ui/input"
 
 export function GithubAuthCard({
   initialRepoUrl = "https://github.com/tidypy/Token-runout.git",
+  onConnectRepo,
 }: {
   initialRepoUrl?: string
+  onConnectRepo?: (repoName: string, repoUrl: string) => void
 }) {
   const [repoUrlInput, setRepoUrlInput] = React.useState(initialRepoUrl)
   const [activeRepoUrl, setActiveRepoUrl] = React.useState(initialRepoUrl)
@@ -40,20 +42,26 @@ export function GithubAuthCard({
       if (parts.length >= 2) {
         return `${parts[parts.length - 2]}/${parts[parts.length - 1]}`
       }
+      if (parts.length === 1 && parts[0]) return parts[0]
     } catch {
       // fallback
     }
-    return "tidypy/Token-runout"
+    return "Token-runout"
   }, [activeRepoUrl])
 
   function handleConnectRepo(e: React.FormEvent) {
     e.preventDefault()
-    if (!repoUrlInput.trim()) {
+    const inputVal = repoUrlInput.trim()
+    if (!inputVal) {
       toast("Please enter a valid Git HTTP URL or repository path")
       return
     }
-    setActiveRepoUrl(repoUrlInput.trim())
-    toast(`Connected repository ${repoName}`)
+    setActiveRepoUrl(inputVal)
+    
+    // Extract short name e.g. "Token-runout"
+    const shortName = inputVal.replace(/\.git$/, "").split("/").pop() || inputVal
+    onConnectRepo?.(shortName, inputVal)
+    toast(`Connected repository ${shortName} — KPIs & Git Hotspots populated`)
   }
 
   function handleSync() {
@@ -102,8 +110,8 @@ export function GithubAuthCard({
             <div className="relative flex-1">
               <Link2Icon className="absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
               <Input
-                type="url"
-                placeholder="https://github.com/owner/repo.git"
+                type="text"
+                placeholder="https://github.com/owner/repo.git or local folder"
                 value={repoUrlInput}
                 onChange={(e) => setRepoUrlInput(e.target.value)}
                 className="h-8 pl-8 text-xs font-mono bg-background/50 border-border/60"

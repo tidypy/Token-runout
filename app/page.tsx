@@ -340,7 +340,13 @@ export default function Page() {
             />
 
             {/* GitHub Auth & Remote Sync Card */}
-            <GithubAuthCard initialRepoUrl="https://github.com/tidypy/Token-runout.git" />
+            <GithubAuthCard
+              initialRepoUrl="https://github.com/tidypy/Token-runout.git"
+              onConnectRepo={(repoName, repoUrl) => {
+                addCodebase({ name: repoName, path: repoUrl })
+                setSelectedCodebase(repoName)
+              }}
+            />
           </div>
 
           {/* Forecast & Tips Sidebar (1 Col) */}

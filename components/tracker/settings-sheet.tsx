@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import {
+  CheckIcon,
   DownloadIcon,
   KeyIcon,
   RadioIcon,
@@ -29,6 +30,16 @@ import type { Tracker } from "@/hooks/use-tracker"
 export function SettingsSheet({ tracker }: { tracker: Tracker }) {
   const fileRef = React.useRef<HTMLInputElement>(null)
   const [apiKeys, setApiKeys] = React.useState<Record<string, string>>({})
+
+  function handleSaveApiKey(providerId: string, providerName: string) {
+    const keyVal = apiKeys[providerId] ?? ""
+    if (!keyVal.trim()) {
+      toast(`Please enter an API key for ${providerName}`)
+      return
+    }
+    tracker.toggleQuotaConnectionMode(providerId as any, "api-key", keyVal.trim())
+    toast(`Connected & Saved ${providerName} API Key! Dashboard quota sync active.`)
+  }
 
   function handleExport() {
     const blob = new Blob([tracker.exportData()], { type: "application/json" })
@@ -90,8 +101,12 @@ export function SettingsSheet({ tracker }: { tracker: Tracker }) {
                 >
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-semibold">{quota.providerName}</span>
-                    <Badge variant="outline" className="text-[10px]">
-                      {quota.connectionMode === "api-key" ? "Direct API Key" : "Local Telemetry"}
+                    <Badge variant={quota.connectionMode === "api-key" ? "default" : "outline"} className="text-[10px]">
+                      {quota.connectionMode === "api-key"
+                        ? quota.apiKey
+                          ? "🟢 Live API Key Saved"
+                          : "Direct API Key"
+                        : "Local Telemetry"}
                     </Badge>
                   </div>
 
@@ -100,7 +115,10 @@ export function SettingsSheet({ tracker }: { tracker: Tracker }) {
                       variant={quota.connectionMode === "api-key" ? "secondary" : "outline"}
                       size="xs"
                       className="flex-1 gap-1 text-[10px]"
-                      onClick={() => tracker.toggleQuotaConnectionMode(quota.providerId, "api-key")}
+                      onClick={() => {
+                        tracker.toggleQuotaConnectionMode(quota.providerId, "api-key")
+                        toast(`Set ${quota.providerName} to Direct API Key Mode`)
+                      }}
                     >
                       <KeyIcon className="size-3 text-primary" /> Direct API Key
                     </Button>
@@ -108,24 +126,37 @@ export function SettingsSheet({ tracker }: { tracker: Tracker }) {
                       variant={quota.connectionMode === "local-telemetry" ? "secondary" : "outline"}
                       size="xs"
                       className="flex-1 gap-1 text-[10px]"
-                      onClick={() => tracker.toggleQuotaConnectionMode(quota.providerId, "local-telemetry")}
+                      onClick={() => {
+                        tracker.toggleQuotaConnectionMode(quota.providerId, "local-telemetry")
+                        toast(`Set ${quota.providerName} to Local Telemetry Mode`)
+                      }}
                     >
                       <RadioIcon className="size-3 text-secondary-foreground" /> Local Telemetry
                     </Button>
                   </div>
 
                   {quota.connectionMode === "api-key" && (
-                    <Input
-                      type="password"
-                      placeholder={`Enter ${quota.providerName} API Key...`}
-                      value={apiKeys[quota.providerId] ?? quota.apiKey ?? ""}
-                      onChange={(e) => {
-                        const val = e.target.value
-                        setApiKeys((prev) => ({ ...prev, [quota.providerId]: val }))
-                        tracker.toggleQuotaConnectionMode(quota.providerId, "api-key", val)
-                      }}
-                      className="h-7 text-xs font-mono bg-background"
-                    />
+                    <div className="flex items-center gap-2 pt-1">
+                      <Input
+                        type="password"
+                        placeholder={`Enter ${quota.providerName} API Key...`}
+                        value={apiKeys[quota.providerId] ?? quota.apiKey ?? ""}
+                        onChange={(e) => {
+                          const val = e.target.value
+                          setApiKeys((prev) => ({ ...prev, [quota.providerId]: val }))
+                        }}
+                        className="h-7 text-xs font-mono bg-background flex-1"
+                      />
+                      <Button
+                        type="button"
+                        size="xs"
+                        variant="default"
+                        className="h-7 text-[10px] gap-1"
+                        onClick={() => handleSaveApiKey(quota.providerId, quota.providerName)}
+                      >
+                        <CheckIcon className="size-3" /> Save Key
+                      </Button>
+                    </div>
                   )}
                 </div>
               ))}

@@ -25,6 +25,7 @@ Tracked feature additions, enhancements, and remedies implemented for **Token Ru
 - **Remedy / Comments**:
   - *Comment 1*: Initial design included a manual diff form (+lines, -lines, commit count inputs).
   - *Remedy*: Removed manual diff input form as it added friction; replaced with automated hotspot tracking per codebase folder.
+  - *Remedy 2*: Replaced automatic faux data with real-data logging & optional preview diff triggers.
 
 ---
 
@@ -59,7 +60,43 @@ Tracked feature additions, enhancements, and remedies implemented for **Token Ru
 
 ---
 
+### [ISSUE #6] Interactive Codebase Deletion
+- **Category**: Workspace Integration
+- **Status**: `[RESOLVED / IMPLEMENTED]`
+- **Description**: Users need to delete or untrack codebases directly from the interface.
+- **Implementation**: Added active codebase pill close handlers in [`app/page.tsx`](file:///c:/Users/Dev/Documents/APPS/Token-runout-main/Token-runout-main/app/page.tsx).
+- **Remedy / Comments**:
+  - *Comment 1*: Added an `x` delete icon directly to active codebase tabs in the filter bar, saving workspace screen space.
+
+---
+
+### [ISSUE #7] Hero Mode Selector Segment Cards
+- **Category**: UI & Dashboard
+- **Status**: `[RESOLVED / IMPLEMENTED]`
+- **Description**: Standard tabs are easy to miss, leading users to mistake simulation predictions with actual usage metrics.
+- **Implementation**: Created segmented cards in [`app/page.tsx`](file:///c:/Users/Dev/Documents/APPS/Token-runout-main/Token-runout-main/app/page.tsx).
+- **Remedy / Comments**:
+  - *Comment 1*: Replaced the small top-right tab switcher with prominent segment selector cards featuring custom colors, active glow styling, and description subheadings.
+
+---
+
+### [ISSUE #8] Subscription Account Tiers Setup
+- **Category**: Plan Configuration
+- **Status**: `[RESOLVED / IMPLEMENTED]`
+- **Description**: Users with account subscription plans (Google Gemini Pro, Claude Free, GPT Free) need clean tracking without granular model API keys.
+- **Implementation**: Updated [`lib/tracker/storage.ts`](file:///c:/Users/Dev/Documents/APPS/Token-runout-main/Token-runout-main/lib/tracker/storage.ts) and [`lib/tracker/pricing.ts`](file:///c:/Users/Dev/Documents/APPS/Token-runout-main/Token-runout-main/lib/tracker/pricing.ts).
+- **Remedy / Comments**:
+  - *Comment 1*: Populated Pro Plans and Free Tiers out-of-the-box, displaying a clean **⚡ Free Tier** badge on cards instead of empty budget allocations.
+
+---
+
 ## 📝 Recent Version Changelog
+
+### v0.3.0 (2026-08-01)
+- **Feat**: Prominent segmented Hero Mode Switcher cards (Forecast vs Actual Plans).
+- **Feat**: Capability to remove a codebase directly from filter pills (`[x]`).
+- **Feat**: Seeded Google Pro Plan, Claude Free, and GPT Free subscription accounts.
+- **Fix**: Removed forced automatic simulation data for fresh codebase views.
 
 ### v0.2.0 (2026-08-01)
 - **Feat**: Provider Rate Limit & Quota Telemetry (5-Hour & Weekly Limits).

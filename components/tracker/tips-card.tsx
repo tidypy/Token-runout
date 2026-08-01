@@ -1,6 +1,6 @@
 "use client"
 
-import { LightbulbIcon } from "lucide-react"
+import { AlertTriangleIcon, LightbulbIcon, ZapIcon } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -45,14 +45,41 @@ export function TipsCard() {
       <CardHeader className="px-4">
         <CardTitle className="flex items-center gap-2 text-sm">
           <LightbulbIcon className="size-4 text-warning" aria-hidden="true" />
-          Reduce token spend
+          Reduce Token Spend & Costs
         </CardTitle>
         <CardDescription className="text-xs">Best practices to stretch your runway.</CardDescription>
       </CardHeader>
-      <CardContent className="flex flex-col gap-3 px-4">
+      <CardContent className="flex flex-col gap-4 px-4">
+        {/* DeepSeek Peak-Valley Pricing Alert */}
+        <div className="flex flex-col gap-2 rounded-xl border border-warning/30 bg-warning/10 p-3 text-xs leading-relaxed transition-all">
+          <div className="flex items-center gap-2 font-semibold text-warning-foreground">
+            <AlertTriangleIcon className="size-4 shrink-0 text-warning" />
+            <span>Advisory: DeepSeek Peak-Valley Pricing</span>
+          </div>
+          <p className="text-muted-foreground text-[11px]">
+            DeepSeek is introducing a peak-valley pricing strategy, doubling pricing (<strong>2x multiplier</strong>) during high-traffic hours. Schedule large RAG embeddings or batch jobs outside these times:
+          </p>
+          <div className="grid grid-cols-2 gap-2 text-[10px] font-mono bg-background/50 border border-border/40 rounded-lg p-2 mt-1">
+            <div>
+              <span className="font-semibold text-foreground">Peak hours (UTC):</span>
+              <ul className="list-disc pl-3 text-muted-foreground">
+                <li>1:00 AM – 4:00 AM</li>
+                <li>6:00 AM – 10:00 AM</li>
+              </ul>
+            </div>
+            <div>
+              <span className="font-semibold text-foreground">Peak hours (UTC+8):</span>
+              <ul className="list-disc pl-3 text-muted-foreground">
+                <li>9:00 AM – 12:00 PM</li>
+                <li>2:00 PM – 6:00 PM</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
         {TIP_GROUPS.map((group, i) => (
           <div key={group.heading} className="flex flex-col gap-2">
-            {i > 0 ? <Separator /> : null}
+            <Separator />
             <Badge variant="secondary" className="w-fit text-[10px]">
               {group.heading}
             </Badge>

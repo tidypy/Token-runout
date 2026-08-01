@@ -40,6 +40,8 @@ import { useTracker } from "@/hooks/use-tracker"
 import { computeForecast, remainingBudget } from "@/lib/tracker/forecast"
 import { fmtUsd } from "@/lib/tracker/format"
 import { PROVIDERS } from "@/lib/tracker/pricing"
+import { cn } from "@/lib/utils"
+
 
 export default function Page() {
   const tracker = useTracker()
@@ -250,6 +252,57 @@ export default function Page() {
         </div>
       </section>
 
+      {/* Primary View Switcher: Forecast vs Actual Plans & Usage */}
+      <div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 max-w-3xl">
+        <button
+          onClick={() => {
+            setActiveTab("forecast")
+            toast("Switched to Forecast Runway Mode (Simulations)")
+          }}
+          className={cn(
+            "flex items-center gap-3.5 rounded-2xl border p-4 text-left transition-all duration-200 shadow-sm",
+            activeTab === "forecast"
+              ? "bg-primary/10 border-primary/70 text-primary shadow-md scale-[1.01]"
+              : "bg-card/45 border-border/60 text-muted-foreground hover:bg-card/70 hover:text-foreground"
+          )}
+        >
+          <div className={cn(
+            "flex size-10 items-center justify-center rounded-xl shadow-inner",
+            activeTab === "forecast" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+          )}>
+            <TrendingDownIcon className="size-5" />
+          </div>
+          <div>
+            <div className="text-xs font-bold uppercase tracking-wider text-foreground">🔮 Forecast Runway Mode</div>
+            <div className="text-[11px] text-muted-foreground">Simulate token exhaust ranges & warning limits</div>
+          </div>
+        </button>
+
+        <button
+          onClick={() => {
+            setActiveTab("plans")
+            toast("Switched to Actual Plans & Subscription Usage")
+          }}
+          className={cn(
+            "flex items-center gap-3.5 rounded-2xl border p-4 text-left transition-all duration-200 shadow-sm",
+            activeTab === "plans"
+              ? "bg-warning/15 border-warning/70 text-warning-foreground shadow-md scale-[1.01]"
+              : "bg-card/45 border-border/60 text-muted-foreground hover:bg-card/70 hover:text-foreground"
+          )}
+        >
+          <div className={cn(
+            "flex size-10 items-center justify-center rounded-xl shadow-inner",
+            activeTab === "plans" ? "bg-warning text-warning-foreground" : "bg-muted text-muted-foreground"
+          )}>
+            <ZapIcon className="size-5" />
+          </div>
+          <div>
+            <div className="text-xs font-bold uppercase tracking-wider text-foreground">📊 Actual Plans & Usage</div>
+            <div className="text-[11px] text-muted-foreground">Track real logged tokens, costs, and plan balances</div>
+          </div>
+        </button>
+      </div>
+
       {/* Filter and Tab Section */}
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         {/* Codebase Filter Buttons */}
@@ -300,7 +353,6 @@ export default function Page() {
             )
           })}
 
-
           <AddCodebaseModal onAddCodebase={addCodebase} />
         </div>
 
@@ -319,10 +371,10 @@ export default function Page() {
           <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)}>
             <TabsList className="h-8 p-0.5 bg-card/60 border border-border/60">
               <TabsTrigger value="forecast" className="text-xs px-2.5 py-1 gap-1">
-                <TrendingDownIcon className="size-3 text-primary" /> Forecast
+                Forecast
               </TabsTrigger>
               <TabsTrigger value="plans" className="text-xs px-2.5 py-1 gap-1">
-                <ZapIcon className="size-3 text-warning" /> Plans & Usage
+                Plans
               </TabsTrigger>
               <TabsTrigger value="pricing" className="text-xs px-2.5 py-1">
                 Live Pricing
@@ -334,6 +386,7 @@ export default function Page() {
           </Tabs>
         </div>
       </div>
+
 
       {/* FORECAST TAB (Primary View) */}
       {activeTab === "forecast" && (

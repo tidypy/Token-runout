@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { FolderGit2Icon, InfoIcon, MoreVerticalIcon, PlusIcon, Trash2Icon, ZapIcon } from "lucide-react"
+import { ActivityIcon, FolderGit2Icon, InfoIcon, MoreVerticalIcon, Trash2Icon, ZapIcon } from "lucide-react"
 import { toast } from "sonner"
 
 import { Sparkline } from "@/components/tracker/sparkline"
@@ -15,8 +15,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
-import { Input } from "@/components/ui/input"
 import {
   Popover,
   PopoverContent,
@@ -53,11 +51,10 @@ const CONFIDENCE_LABEL = {
 export function ModelCard({
   model,
   onRemove,
-  onLogUsage,
 }: {
   model: TrackedModel
   onRemove: (id: string) => void
-  onLogUsage: (id: string, entry: UsageEntry) => void
+  onLogUsage?: (id: string, entry: UsageEntry) => void
 }) {
   const forecast = computeForecast(model)
   const pricing = getPricing(model.modelId)
@@ -157,7 +154,9 @@ export function ModelCard({
           {CONFIDENCE_LABEL[forecast.confidence]}
           {forecast.isEstimated ? " · estimated" : ""}
         </Badge>
-        <LogUsagePopover model={model} onLogUsage={onLogUsage} />
+        <Badge variant="outline" className="text-[10px] font-mono border-primary/30 text-primary">
+          <ActivityIcon className="mr-1 size-3" /> Auto-Sync Active
+        </Badge>
       </CardFooter>
     </Card>
   )
@@ -210,78 +209,6 @@ function ForecastInfo({
             <li>No usage is logged yet, so this uses expected daily tokens with a wide ±50% band.</li>
           ) : null}
         </ul>
-      </PopoverContent>
-    </Popover>
-  )
-}
-
-function LogUsagePopover({
-  model,
-  onLogUsage,
-}: {
-  model: TrackedModel
-  onLogUsage: (id: string, entry: UsageEntry) => void
-}) {
-  const [open, setOpen] = React.useState(false)
-  const [inputTokens, setInputTokens] = React.useState("")
-  const [outputTokens, setOutputTokens] = React.useState("")
-
-  function submit(e: React.FormEvent) {
-    e.preventDefault()
-    const inTok = Number(inputTokens) || 0
-    const outTok = Number(outputTokens) || 0
-    if (inTok <= 0 && outTok <= 0) return
-    onLogUsage(model.id, {
-      date: new Date().toISOString().slice(0, 10),
-      inputTokens: inTok,
-      outputTokens: outTok,
-    })
-    setInputTokens("")
-    setOutputTokens("")
-    setOpen(false)
-    toast("Usage logged for today")
-  }
-
-  return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger
-        render={
-          <Button variant="outline" size="xs">
-            <PlusIcon data-icon="inline-start" />
-            Log usage
-          </Button>
-        }
-      />
-      <PopoverContent className="w-64" align="end">
-        <form onSubmit={submit}>
-          <FieldGroup className="gap-3">
-            <Field>
-              <FieldLabel htmlFor={`in-${model.id}`}>Input tokens today</FieldLabel>
-              <Input
-                id={`in-${model.id}`}
-                type="number"
-                min={0}
-                placeholder="e.g. 500000"
-                value={inputTokens}
-                onChange={(e) => setInputTokens(e.target.value)}
-              />
-            </Field>
-            <Field>
-              <FieldLabel htmlFor={`out-${model.id}`}>Output tokens today</FieldLabel>
-              <Input
-                id={`out-${model.id}`}
-                type="number"
-                min={0}
-                placeholder="e.g. 120000"
-                value={outputTokens}
-                onChange={(e) => setOutputTokens(e.target.value)}
-              />
-            </Field>
-            <Button type="submit" size="sm">
-              Add to today
-            </Button>
-          </FieldGroup>
-        </form>
       </PopoverContent>
     </Popover>
   )

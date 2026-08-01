@@ -128,6 +128,19 @@ export function useTracker() {
     [update],
   )
 
+  const removeCodebase = React.useCallback(
+    (name: string) => {
+      update((prev) => ({
+        ...prev,
+        codebases: prev.codebases.filter((cb) => cb.name !== name),
+        gitHotspots: prev.gitHotspots.filter((gh) => gh.codebase !== name),
+        models: prev.models.filter((m) => m.codebase !== name),
+      }))
+    },
+    [update],
+  )
+
+
   const toggleQuotaConnectionMode = React.useCallback(
     (providerId: ProviderId, mode: ConnectionMode, apiKey?: string) => {
       update((prev) => ({
@@ -193,6 +206,7 @@ export function useTracker() {
     updateModel,
     logUsage,
     addCodebase,
+    removeCodebase,
     toggleQuotaConnectionMode,
     addGitHotspot,
     exportData,

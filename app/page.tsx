@@ -17,7 +17,9 @@ import {
   SparklesIcon,
   TrendingDownIcon,
   ZapIcon,
+  XIcon,
 } from "lucide-react"
+import { toast } from "sonner"
 
 import { AddCodebaseModal } from "@/components/tracker/add-codebase-modal"
 import { AddModelSheet } from "@/components/tracker/add-model-sheet"
@@ -56,9 +58,11 @@ export default function Page() {
     removeModel,
     logUsage,
     addCodebase,
+    removeCodebase,
     toggleQuotaConnectionMode,
     addGitHotspot,
   } = tracker
+
 
   // Extract list of unique codebases combining tracked models & added codebases
   const allCodebases = React.useMemo(() => {
@@ -265,17 +269,37 @@ export default function Page() {
 
           {allCodebases.map((cb) => {
             const count = models.filter((m) => m.codebase === cb).length
+            const isSelected = selectedCodebase === cb
             return (
-              <Button
-                key={cb}
-                variant={selectedCodebase === cb ? "secondary" : "ghost"}
-                size="xs"
-                onClick={() => setSelectedCodebase(cb)}
-              >
-                {cb} ({count})
-              </Button>
+              <div key={cb} className="inline-flex items-center gap-0.5 rounded-lg border border-border/40 bg-card/30 p-0.5 transition-all">
+                <Button
+                  variant={isSelected ? "secondary" : "ghost"}
+                  size="xs"
+                  onClick={() => setSelectedCodebase(cb)}
+                  className="h-7 px-2.5 py-1 text-xs"
+                >
+                  {cb} ({count})
+                </Button>
+                {isSelected && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="size-5 rounded-md text-muted-foreground hover:bg-destructive hover:text-destructive-foreground p-0"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      removeCodebase(cb)
+                      setSelectedCodebase("all")
+                      toast(`Removed codebase ${cb}`)
+                    }}
+                    title={`Remove codebase ${cb}`}
+                  >
+                    <XIcon className="size-3" />
+                  </Button>
+                )}
+              </div>
             )
           })}
+
 
           <AddCodebaseModal onAddCodebase={addCodebase} />
         </div>

@@ -2,7 +2,7 @@ import { getDefaultGitHotspots, getDefaultCodebases } from "./git-analytics"
 import { getDefaultQuotas } from "./quota"
 import type { ProviderId, TrackedModel, TrackerData, UsageEntry } from "./types"
 
-const STORAGE_KEY = "token-runway:v2"
+const STORAGE_KEY = "token-runway:v3"
 const DAY_MS = 24 * 60 * 60 * 1000
 
 function isoDay(offset: number): string {
@@ -55,11 +55,11 @@ export function seedData(): TrackerData {
   return {
     version: 1,
     models: [
-      mk("anthropic", "claude-sonnet-4.5", "acme-web", 120, 7, 14, 900_000, 220_000, 1.4),
-      mk("openai", "gpt-4o-mini", "acme-web", 25, 7, 14, 2_400_000, 600_000),
+      mk("google", "google-pro-plan", "Token-runout", 100, 7, 14, 1_800_000, 450_000, 1.3),
+      mk("anthropic", "claude-pro-plan", "Token-runout", 120, 7, 14, 900_000, 220_000, 1.4),
+      mk("openai", "openai-team-plan", "acme-web", 60, 7, 14, 2_400_000, 600_000),
       mk("google", "gemini-2.5-flash", "docs-pipeline", 40, 5, 10, 3_200_000, 500_000, 1.2),
-      mk("openai", "gpt-4.1", "eval-harness", 60, 7, 4, 500_000, 140_000),
-      mk("deepseek", "deepseek-v3", "batch-jobs", 15, 5, 14, 4_000_000, 900_000, 1.6),
+      mk("deepseek", "deepseek-v3", "batch-jobs", 20, 5, 14, 4_000_000, 900_000, 1.6),
     ],
     quotas: getDefaultQuotas(),
     codebases: getDefaultCodebases(),

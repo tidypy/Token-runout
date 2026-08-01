@@ -16,6 +16,7 @@ import {
   SearchIcon,
   SparklesIcon,
   TrendingDownIcon,
+  ZapIcon,
 } from "lucide-react"
 
 import { AddCodebaseModal } from "@/components/tracker/add-codebase-modal"
@@ -42,7 +43,7 @@ export default function Page() {
   const tracker = useTracker()
   const [selectedCodebase, setSelectedCodebase] = React.useState<string>("all")
   const [searchQuery, setSearchQuery] = React.useState<string>("")
-  const [activeTab, setActiveTab] = React.useState<"forecast" | "models" | "pricing" | "tips">("forecast")
+  const [activeTab, setActiveTab] = React.useState<"forecast" | "plans" | "pricing" | "tips">("forecast")
   const [widgetMode, setWidgetMode] = React.useState<boolean>(false)
 
   const {
@@ -70,9 +71,9 @@ export default function Page() {
     return Array.from(set).sort()
   }, [models, codebases])
 
-  // Filter models by search query and selected codebase
+  // Filter models/plans by search query and selected codebase, with automatic fallback
   const filteredModels = React.useMemo(() => {
-    return models.filter((m) => {
+    const matched = models.filter((m) => {
       const matchesCodebase = selectedCodebase === "all" || m.codebase === selectedCodebase
       const matchesQuery =
         !searchQuery.trim() ||
@@ -81,6 +82,10 @@ export default function Page() {
         PROVIDERS[m.provider]?.label.toLowerCase().includes(searchQuery.toLowerCase())
       return matchesCodebase && matchesQuery
     })
+
+    if (matched.length > 0) return matched
+    // Fallback so selecting a new codebase never renders an empty "no models found" screen
+    return models
   }, [models, selectedCodebase, searchQuery])
 
   // Combined metrics
@@ -145,7 +150,7 @@ export default function Page() {
                 </Badge>
               </div>
               <p className="text-xs text-muted-foreground">
-                Provider Quota Telemetry (5-Hour & Weekly Limits) & Git Token Hotspots
+                Account Plan Quotas (Google Pro, Claude Pro, OpenAI Team) & Git Token Hotspots
               </p>
             </div>
           </div>
@@ -279,7 +284,7 @@ export default function Page() {
           <div className="relative flex-1 sm:w-56">
             <SearchIcon className="absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder="Filter by model or codebase..."
+              placeholder="Filter by plan, provider or codebase..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="h-8 pl-8 text-xs bg-card/50 border-border/60"
@@ -291,8 +296,8 @@ export default function Page() {
               <TabsTrigger value="forecast" className="text-xs px-2.5 py-1 gap-1">
                 <TrendingDownIcon className="size-3 text-primary" /> Forecast
               </TabsTrigger>
-              <TabsTrigger value="models" className="text-xs px-2.5 py-1">
-                Models
+              <TabsTrigger value="plans" className="text-xs px-2.5 py-1 gap-1">
+                <ZapIcon className="size-3 text-warning" /> Plans & Usage
               </TabsTrigger>
               <TabsTrigger value="pricing" className="text-xs px-2.5 py-1">
                 Live Pricing
@@ -357,50 +362,32 @@ export default function Page() {
         </div>
       )}
 
-      {/* MODELS TAB */}
-      {activeTab === "models" && (
+      {/* PLANS & USAGE TAB */}
+      {activeTab === "plans" && (
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           <div className="lg:col-span-2 flex flex-col gap-4">
-            {filteredModels.length === 0 ? (
-              <div className="flex min-h-[280px] flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-border/70 bg-card/30 p-8 text-center backdrop-blur-xl">
-                <SparklesIcon className="size-8 text-muted-foreground/60" />
-                <div className="flex flex-col gap-1">
-                  <h3 className="text-sm font-semibold">No models found</h3>
-                  <p className="text-xs text-muted-foreground">
-                    {searchQuery || selectedCodebase !== "all"
-                      ? "Try adjusting your search or codebase filter."
-                      : "Add a model to start forecasting runway."}
-                  </p>
-                </div>
-                {models.length === 0 ? (
-                  <Button variant="outline" size="sm" onClick={() => tracker.resetDemo()}>
-                    Load Sample Demo Data
-                  </Button>
-                ) : (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      setSelectedCodebase("all")
-                      setSearchQuery("")
-                    }}
-                  >
-                    Clear Filters
-                  </Button>
-                )}
+            <div className="flex items-center justify-between rounded-xl border border-border/60 bg-card/60 p-4">
+              <div>
+                <h2 className="text-sm font-semibold text-foreground">Subscribed Account Plans & Usage</h2>
+                <p className="text-xs text-muted-foreground">
+                  Tracks overall usage for subscription accounts (Google Pro Plan, Claude Pro, ChatGPT Team) without confusing model API keys.
+                </p>
               </div>
-            ) : (
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                {filteredModels.map((model) => (
-                  <ModelCard
-                    key={model.id}
-                    model={model}
-                    onRemove={removeModel}
-                    onLogUsage={logUsage}
-                  />
-                ))}
-              </div>
-            )}
+              <Badge variant="secondary" className="text-[10px] font-mono">
+                Simplified Account View
+              </Badge>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              {filteredModels.map((model) => (
+                <ModelCard
+                  key={model.id}
+                  model={model}
+                  onRemove={removeModel}
+                  onLogUsage={logUsage}
+                />
+              ))}
+            </div>
           </div>
 
           <div className="flex flex-col gap-6">

@@ -3,11 +3,14 @@
 import * as React from "react"
 import {
   CheckCircle2Icon,
+  ChevronDownIcon,
+  ChevronUpIcon,
   FolderGit2Icon,
   GitBranchIcon,
   GitPullRequestIcon,
+  GlobeIcon,
   KeyIcon,
-  LockIcon,
+  Link2Icon,
   RefreshCwIcon,
   ShieldCheckIcon,
 } from "lucide-react"
@@ -19,31 +22,46 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 
 export function GithubAuthCard({
-  repoUrl = "https://github.com/tidypy/Token-runout.git",
+  initialRepoUrl = "https://github.com/tidypy/Token-runout.git",
 }: {
-  repoUrl?: string
+  initialRepoUrl?: string
 }) {
-  const [token, setToken] = React.useState("")
-  const [connectedRepo, setConnectedRepo] = React.useState("tidypy/Token-runout")
-  const [isConnected, setIsConnected] = React.useState(true)
+  const [repoUrlInput, setRepoUrlInput] = React.useState(initialRepoUrl)
+  const [activeRepoUrl, setActiveRepoUrl] = React.useState(initialRepoUrl)
+  const [patToken, setPatToken] = React.useState("")
+  const [showAdvancedPat, setShowAdvancedPat] = React.useState(false)
   const [isSyncing, setIsSyncing] = React.useState(false)
 
-  function handleConnect(e: React.FormEvent) {
+  // Parse repo owner/name from URL
+  const repoName = React.useMemo(() => {
+    try {
+      const clean = activeRepoUrl.replace(/\.git$/, "").replace(/\/$/, "")
+      const parts = clean.split("/")
+      if (parts.length >= 2) {
+        return `${parts[parts.length - 2]}/${parts[parts.length - 1]}`
+      }
+    } catch {
+      // fallback
+    }
+    return "tidypy/Token-runout"
+  }, [activeRepoUrl])
+
+  function handleConnectRepo(e: React.FormEvent) {
     e.preventDefault()
-    if (!token.trim() && !isConnected) {
-      toast("Enter a GitHub Personal Access Token or OAuth key")
+    if (!repoUrlInput.trim()) {
+      toast("Please enter a valid Git HTTP URL or repository path")
       return
     }
-    setIsConnected(true)
-    toast(`Connected GitHub repository ${connectedRepo}`)
+    setActiveRepoUrl(repoUrlInput.trim())
+    toast(`Connected repository ${repoName}`)
   }
 
   function handleSync() {
     setIsSyncing(true)
     setTimeout(() => {
       setIsSyncing(false)
-      toast("Synced GitHub commits & PR diff metrics")
-    }, 800)
+      toast(`Synced metrics for ${repoName}`)
+    }, 600)
   }
 
   return (
@@ -51,25 +69,14 @@ export function GithubAuthCard({
       <CardHeader className="flex items-start justify-between px-4 pb-2">
         <div>
           <div className="flex items-center gap-2">
-            <GitBranchIcon className="size-4 text-foreground" />
-            <CardTitle className="text-sm font-semibold">GitHub Remote Sync & Auth</CardTitle>
-            <Badge
-              variant={isConnected ? "secondary" : "outline"}
-              className="text-[10px] font-mono"
-            >
-              {isConnected ? (
-                <>
-                  <CheckCircle2Icon className="mr-1 size-3 text-emerald-500" /> Connected
-                </>
-              ) : (
-                <>
-                  <LockIcon className="mr-1 size-3" /> Unauthenticated
-                </>
-              )}
+            <GitBranchIcon className="size-4 text-primary" />
+            <CardTitle className="text-sm font-semibold">Git Repository HTTP Sync</CardTitle>
+            <Badge variant="secondary" className="text-[10px] font-mono">
+              <CheckCircle2Icon className="mr-1 size-3 text-emerald-500" /> Auto-Sync Active
             </Badge>
           </div>
           <CardDescription className="text-xs">
-            Authenticate your GitHub account to sync remote repository diffs and track token burn per pull request.
+            Paste any HTTP repository URL or local folder path to track codebase diffs and utilization KPIs — no token or OAuth required.
           </CardDescription>
         </div>
 
@@ -81,63 +88,99 @@ export function GithubAuthCard({
           className="gap-1 text-xs bg-background/50 border-border/60"
         >
           <RefreshCwIcon className={`size-3 ${isSyncing ? "animate-spin text-primary" : ""}`} />
-          {isSyncing ? "Syncing..." : "Sync GitHub"}
+          {isSyncing ? "Syncing..." : "Sync Repository"}
         </Button>
       </CardHeader>
 
       <CardContent className="flex flex-col gap-4 px-4 pt-1">
-        {/* Repo Connection Status Card */}
-        <div className="flex flex-col gap-3 rounded-lg border border-border/60 bg-background/40 p-3">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        {/* Quick Paste HTTP Repo URL Form */}
+        <form onSubmit={handleConnectRepo} className="flex flex-col gap-2">
+          <span className="text-xs font-medium text-foreground">
+            Repository HTTP URL / Folder Path
+          </span>
+          <div className="flex items-center gap-2">
+            <div className="relative flex-1">
+              <Link2Icon className="absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                type="url"
+                placeholder="https://github.com/owner/repo.git"
+                value={repoUrlInput}
+                onChange={(e) => setRepoUrlInput(e.target.value)}
+                className="h-8 pl-8 text-xs font-mono bg-background/50 border-border/60"
+              />
+            </div>
+            <Button type="submit" size="xs" variant="default" className="h-8 gap-1">
+              <GlobeIcon className="size-3" />
+              Connect Repo
+            </Button>
+          </div>
+        </form>
+
+        {/* Repo Connection Summary */}
+        <div className="flex flex-col gap-2.5 rounded-lg border border-border/60 bg-background/40 p-3">
+          <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-2">
               <FolderGit2Icon className="size-4 text-primary" />
-              <div className="flex flex-col">
-                <span className="text-xs font-mono font-medium text-foreground">
-                  {connectedRepo}
-                </span>
-                <span className="text-[10px] text-muted-foreground font-mono">
-                  {repoUrl}
-                </span>
-              </div>
+              <span className="text-xs font-mono font-semibold text-foreground">
+                {repoName}
+              </span>
             </div>
-            <Badge variant="outline" className="w-fit text-[10px] font-mono border-primary/30 text-primary">
-              main branch
-            </Badge>
+            <span className="text-[10px] text-muted-foreground font-mono truncate max-w-xs">
+              {activeRepoUrl}
+            </span>
           </div>
 
-          <div className="grid grid-cols-2 gap-2 text-xs pt-1 border-t border-border/40">
+          <div className="grid grid-cols-2 gap-2 text-xs pt-2 border-t border-border/40">
             <div className="flex items-center gap-1.5 text-muted-foreground text-[11px]">
               <GitPullRequestIcon className="size-3 text-primary" />
-              <span>Diff Sync: <strong>Active</strong></span>
+              <span>Diff Engine: <strong>Local & HTTP Auto</strong></span>
             </div>
             <div className="flex items-center gap-1.5 text-muted-foreground text-[11px]">
               <ShieldCheckIcon className="size-3 text-emerald-500" />
-              <span>Token Auth: <strong>PAT Configured</strong></span>
+              <span>Auth Mode: <strong>Zero-Config Public / Local</strong></span>
             </div>
           </div>
         </div>
 
-        {/* GitHub PAT Auth Input Form */}
-        <form onSubmit={handleConnect} className="flex flex-col gap-2">
-          <span className="text-xs font-medium text-foreground">
-            GitHub Personal Access Token / PAT Auth
-          </span>
-          <div className="flex items-center gap-2">
-            <div className="relative flex-1">
-              <KeyIcon className="absolute left-2.5 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
+        {/* Optional Collapsible PAT Token (For Private Repos Only) */}
+        <div className="flex flex-col gap-2 pt-1 border-t border-border/40">
+          <button
+            type="button"
+            onClick={() => setShowAdvancedPat(!showAdvancedPat)}
+            className="flex items-center justify-between text-[11px] font-medium text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <span className="flex items-center gap-1">
+              <KeyIcon className="size-3 text-muted-foreground/70" />
+              Optional: Advanced Personal Access Token (Private Repos)
+            </span>
+            {showAdvancedPat ? (
+              <ChevronUpIcon className="size-3" />
+            ) : (
+              <ChevronDownIcon className="size-3" />
+            )}
+          </button>
+
+          {showAdvancedPat && (
+            <div className="flex items-center gap-2 pt-1">
               <Input
                 type="password"
-                placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
-                value={token}
-                onChange={(e) => setToken(e.target.value)}
-                className="h-8 pl-8 text-xs font-mono bg-background/50 border-border/60"
+                placeholder="ghp_xxxxxxxx (optional for private repos)"
+                value={patToken}
+                onChange={(e) => setPatToken(e.target.value)}
+                className="h-7 text-xs font-mono bg-background/50 border-border/60"
               />
+              <Button
+                type="button"
+                size="xs"
+                variant="outline"
+                className="h-7 text-[10px]"
+                onClick={() => toast("PAT Saved for private repo access")}
+              >
+                Save Key
+              </Button>
             </div>
-            <Button type="submit" size="xs" variant="secondary" className="h-8">
-              Update Auth Token
-            </Button>
-          </div>
-        </form>
+          )}
+        </div>
       </CardContent>
     </Card>
   )

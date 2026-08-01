@@ -22,8 +22,8 @@ import {
 import { toast } from "sonner"
 
 import { AddCodebaseModal } from "@/components/tracker/add-codebase-modal"
-import { AddModelSheet } from "@/components/tracker/add-model-sheet"
 import { CompactWidget } from "@/components/tracker/compact-widget"
+
 import { ForecastPanel } from "@/components/tracker/forecast-panel"
 import { GitHotspots } from "@/components/tracker/git-hotspots"
 import { GithubAuthCard } from "@/components/tracker/github-auth-card"
@@ -457,11 +457,11 @@ export default function Page() {
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <Badge variant="secondary" className="text-[10px] font-mono hidden sm:inline-flex">
+                <Badge variant="secondary" className="text-[10px] font-mono">
                   Simplified Account View
                 </Badge>
-                <AddModelSheet onAdd={addModel} />
               </div>
+
 
             </div>
 

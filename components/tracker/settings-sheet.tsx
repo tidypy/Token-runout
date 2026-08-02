@@ -27,12 +27,13 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import type { Tracker } from "@/hooks/use-tracker"
+import type { ProviderId } from "@/lib/tracker/types"
 
 export function SettingsSheet({ tracker }: { tracker: Tracker }) {
   const fileRef = React.useRef<HTMLInputElement>(null)
   const [keyInputs, setKeyInputs] = React.useState<Record<string, { name: string; key: string }>>({})
 
-  function handleAddApiKey(providerId: any, providerName: string) {
+  function handleAddApiKey(providerId: ProviderId, providerName: string) {
     const input = keyInputs[providerId] || { name: "", key: "" }
     if (!input.key.trim()) {
       toast(`Please enter an API key for ${providerName}`)

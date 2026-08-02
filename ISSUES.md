@@ -16,4 +16,6 @@ For detailed issue descriptions, implementation paths, and remedy comments, see 
 | **#8** | Subscription Account Tiers Setup | Plans | `RESOLVED` | Google Pro, Claude Free, and GPT Free out of the box |
 | **#9** | DeepSeek Peak-Valley Pricing Advisory | Tips | `RESOLVED` | Advisory alert callout widget added to TipsCard |
 | **#10** | Dark Mode & Pro Blue Theme Switcher | UI | `RESOLVED` | Dropdown theme switcher using CSS custom classes |
+| **#11** | Standalone PyInstaller Desktop Bundle | Packaging | `RESOLVED` | Static Next.js export with embedded loopback server (`127.0.0.1:0`) & single-file `.exe` |
+| **#12** | Native Floating Overlay Desktop Widget | Desktop / UX | `RESOLVED` | PyWebView window IPC mode toggle with native dragging (`-webkit-app-region: drag`) & always-on-top |
 

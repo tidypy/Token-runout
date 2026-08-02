@@ -38,6 +38,7 @@ export function useTracker() {
   const [hydrated, setHydrated] = React.useState(false)
 
   React.useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setData(loadData())
     setHydrated(true)
   }, [])

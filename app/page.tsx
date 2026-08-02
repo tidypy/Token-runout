@@ -54,6 +54,19 @@ export default function Page() {
   const [activeTab, setActiveTab] = React.useState<"forecast" | "plans" | "pricing" | "tips">("forecast")
   const [widgetMode, setWidgetMode] = React.useState<boolean>(false)
 
+  const toggleWidgetMode = React.useCallback(
+    (nextState?: boolean) => {
+      setWidgetMode((prev) => {
+        const target = nextState !== undefined ? nextState : !prev
+        if (typeof window !== "undefined" && window.pywebview?.api?.set_mode) {
+          window.pywebview.api.set_mode(target ? "compact" : "expanded")
+        }
+        return target
+      })
+    },
+    [],
+  )
+
   const {
     hydrated,
     models,
@@ -171,10 +184,9 @@ export default function Page() {
             <Button
               variant={widgetMode ? "secondary" : "outline"}
               size="sm"
-              onClick={() => setWidgetMode(!widgetMode)}
+              onClick={() => toggleWidgetMode()}
               className="gap-1.5"
             >
-
               {widgetMode ? (
                 <>
                   <Maximize2Icon className="size-3.5" />
@@ -374,7 +386,7 @@ export default function Page() {
             />
           </div>
 
-          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)}>
+          <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)}>
             <TabsList className="h-8 p-0.5 bg-card/60 border border-border/60">
               <TabsTrigger value="forecast" className="text-xs px-2.5 py-1 gap-1">
                 Forecast
@@ -525,7 +537,7 @@ export default function Page() {
 
       {/* Floating Widget Mode Overlay */}
       {widgetMode && (
-        <CompactWidget models={models} onExpand={() => setWidgetMode(false)} />
+        <CompactWidget models={models} onExpand={() => toggleWidgetMode(false)} />
       )}
     </div>
   )

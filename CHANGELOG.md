@@ -88,9 +88,50 @@ Tracked feature additions, enhancements, and remedies implemented for **Token Ru
 - **Remedy / Comments**:
   - *Comment 1*: Populated Pro Plans and Free Tiers out-of-the-box, displaying a clean **⚡ Free Tier** badge on cards instead of empty budget allocations.
 
+### [ISSUE #9] DeepSeek Peak-Valley Pricing Advisory
+- **Category**: Tips & Pricing Engine
+- **Status**: `[RESOLVED / IMPLEMENTED]`
+- **Description**: DeepSeek off-peak pricing discounts (up to 50% savings during 16:00-24:00 UTC) need visibility to guide model routing.
+- **Implementation**: Updated [`components/tracker/tips-card.tsx`](file:///c:/Users/Dev/Documents/APPS/Token-runout-main/Token-runout-main/components/tracker/tips-card.tsx).
+
+---
+
+### [ISSUE #10] Dark Mode & Pro Blue Theme Switcher
+- **Category**: UI / Styling
+- **Status**: `[RESOLVED / IMPLEMENTED]`
+- **Description**: Provide customizable themes (Light Glassy, Sleek Dark Mode, Pro Blue CMS).
+- **Implementation**: Created [`components/tracker/theme-switcher.tsx`](file:///c:/Users/Dev/Documents/APPS/Token-runout-main/Token-runout-main/components/tracker/theme-switcher.tsx).
+
+---
+
+### [ISSUE #11] Standalone PyInstaller Desktop Bundle
+- **Category**: Desktop / Packaging
+- **Status**: `[RESOLVED / IMPLEMENTED]`
+- **Description**: Non-technical users need a zero-terminal single-file executable (`TokenRunout.exe`) without Node.js, NPM, or firewall prompts.
+- **Implementation**: Created [`desktop_runner.py`](file:///c:/Users/Dev/Documents/APPS/Token-runout-main/Token-runout-main/desktop_runner.py), [`build_desktop.py`](file:///c:/Users/Dev/Documents/APPS/Token-runout-main/Token-runout-main/build_desktop.py), and updated [`next.config.ts`](file:///c:/Users/Dev/Documents/APPS/Token-runout-main/Token-runout-main/next.config.ts) for static export (`output: "export"`).
+- **Remedy / Comments**:
+  - *Remedy*: Used an in-process loopback HTTP server (`127.0.0.1:0`) to resolve Next.js static asset chunk paths while bypassing Windows Firewall prompts.
+
+---
+
+### [ISSUE #12] Native Floating Overlay Desktop Widget
+- **Category**: Desktop / UX
+- **Status**: `[RESOLVED / IMPLEMENTED]`
+- **Description**: The compact widget mode must function as a standalone, frameless floating desktop overlay rather than being trapped in a browser tab.
+- **Implementation**: Updated [`components/tracker/compact-widget.tsx`](file:///c:/Users/Dev/Documents/APPS/Token-runout-main/Token-runout-main/components/tracker/compact-widget.tsx) and [`app/page.tsx`](file:///c:/Users/Dev/Documents/APPS/Token-runout-main/Token-runout-main/app/page.tsx).
+- **Remedy / Comments**:
+  - *Remedy*: Implemented `-webkit-app-region: drag` for frameless window dragging across screens and PyWebView two-way IPC window resizing and Always-on-Top toggles.
+
 ---
 
 ## 📝 Recent Version Changelog
+
+### v0.4.0 (2026-08-02)
+- **Feat**: Single-file Windows desktop executable packaging (`dist/TokenRunout.exe` via PyInstaller).
+- **Feat**: Native floating desktop widget overlay with frameless window dragging (`-webkit-app-region: drag`).
+- **Feat**: Two-way PyWebView IPC bridge for Compact Widget vs Full Dashboard window resizing and Always-On-Top toggles.
+- **Fix**: Resolved strict TypeScript and ESLint warnings/errors across `app/page.tsx`, `settings-sheet.tsx`, `theme-switcher.tsx`, and `use-tracker.ts`.
+- **Fix**: Solved static asset chunk loading via embedded loopback server (`127.0.0.1:0`), preventing startup hangs.
 
 ### v0.3.0 (2026-08-01)
 - **Feat**: Prominent segmented Hero Mode Switcher cards (Forecast vs Actual Plans).

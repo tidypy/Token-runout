@@ -20,13 +20,6 @@ const STORAGE_THEME_KEY = "token-runway:theme"
 export function ThemeSwitcher() {
   const [theme, setTheme] = React.useState<ThemeMode>("light")
 
-  React.useEffect(() => {
-    const saved = localStorage.getItem(STORAGE_THEME_KEY) as ThemeMode | null
-    if (saved && (saved === "light" || saved === "dark" || saved === "pro-blue")) {
-      applyTheme(saved)
-    }
-  }, [])
-
   function applyTheme(mode: ThemeMode) {
     setTheme(mode)
     localStorage.setItem(STORAGE_THEME_KEY, mode)
@@ -40,6 +33,14 @@ export function ThemeSwitcher() {
       root.classList.add("theme-pro-blue")
     }
   }
+
+  React.useEffect(() => {
+    const saved = localStorage.getItem(STORAGE_THEME_KEY) as ThemeMode | null
+    if (saved && (saved === "light" || saved === "dark" || saved === "pro-blue")) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      applyTheme(saved)
+    }
+  }, [])
 
   function handleSelect(mode: ThemeMode, label: string) {
     applyTheme(mode)

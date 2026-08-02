@@ -29,6 +29,7 @@ export interface ProviderQuota {
   }
   apiKey?: string
   apiKeys?: ApiKeyEntry[]
+  realBalanceUsd?: number
   lastSync: string
 }
 

@@ -6,6 +6,7 @@ import {
   AlertTriangleIcon,
   CheckCircle2Icon,
   ClockIcon,
+  DollarSignIcon,
   KeyIcon,
   RadioIcon,
   RefreshCwIcon,
@@ -104,6 +105,13 @@ export function QuotaCard({
                 {hasApiKeys ? `🟢 ${keysList.length} Active Key${keysList.length > 1 ? "s" : ""}` : "🔑 Needs Key"}
               </Badge>
             </div>
+
+            {typeof quota.realBalanceUsd === "number" && (
+              <div className="flex items-center gap-1 text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400 py-0.5">
+                <DollarSignIcon className="size-3.5" />
+                <span>Live Account Balance: ${quota.realBalanceUsd.toFixed(2)} USD</span>
+              </div>
+            )}
 
             {hasApiKeys ? (
               <div className="flex flex-wrap items-center gap-1.5 pt-0.5">

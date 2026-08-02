@@ -3,6 +3,7 @@
 import * as React from "react"
 
 import { estimateTokensFromDiff } from "@/lib/tracker/git-analytics"
+import { fetchDeepSeekRealBalance } from "@/lib/tracker/quota-api"
 import { getDefaultQuotas } from "@/lib/tracker/quota"
 import { exportJson, loadData, makeId, parseImport, saveData, seedData } from "@/lib/tracker/storage"
 import type {
@@ -140,7 +141,6 @@ export function useTracker() {
     [update],
   )
 
-
   const toggleQuotaConnectionMode = React.useCallback(
     (providerId: ProviderId, mode: ConnectionMode, apiKey?: string) => {
       update((prev) => ({
@@ -157,6 +157,7 @@ export function useTracker() {
 
   const addApiKey = React.useCallback(
     (providerId: ProviderId, name: string, key: string) => {
+      const cleanKey = key.trim()
       update((prev) => ({
         ...prev,
         quotas: prev.quotas.map((q) => {
@@ -164,19 +165,44 @@ export function useTracker() {
           const newEntry = {
             id: makeId(),
             name: name.trim() || `API Key ${(q.apiKeys?.length || 0) + 1}`,
-            key: key.trim(),
+            key: cleanKey,
             createdAt: new Date().toISOString(),
           }
           const existingKeys = q.apiKeys || []
           return {
             ...q,
             connectionMode: "api-key",
-            apiKey: key.trim(),
+            apiKey: cleanKey,
             apiKeys: [...existingKeys, newEntry],
             lastSync: new Date().toISOString(),
           }
         }),
       }))
+
+      // Live fetch balance if DeepSeek
+      if (providerId === "deepseek" && cleanKey) {
+        fetchDeepSeekRealBalance(cleanKey).then((bal) => {
+          if (bal && typeof bal.totalBalanceUsd === "number") {
+            update((prev) => ({
+              ...prev,
+              models: prev.models.map((m) =>
+                m.provider === "deepseek"
+                  ? { ...m, budgetUsd: bal.totalBalanceUsd }
+                  : m,
+              ),
+              quotas: prev.quotas.map((q) =>
+                q.providerId === "deepseek"
+                  ? {
+                      ...q,
+                      realBalanceUsd: bal.totalBalanceUsd,
+                      lastSync: new Date().toISOString(),
+                    }
+                  : q,
+              ),
+            }))
+          }
+        })
+      }
     },
     [update],
   )
@@ -200,7 +226,6 @@ export function useTracker() {
     },
     [update],
   )
-
 
   const addGitHotspot = React.useCallback(
     (input: { filePath: string; codebase: string; changeCount: number; linesAdded: number; linesDeleted: number }) => {

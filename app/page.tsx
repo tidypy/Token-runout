@@ -22,7 +22,9 @@ import {
 import { toast } from "sonner"
 
 import { AddCodebaseModal } from "@/components/tracker/add-codebase-modal"
+import { AddModelSheet } from "@/components/tracker/add-model-sheet"
 import { CompactWidget } from "@/components/tracker/compact-widget"
+
 
 import { ForecastPanel } from "@/components/tracker/forecast-panel"
 import { GitHotspots } from "@/components/tracker/git-hotspots"
@@ -457,24 +459,37 @@ export default function Page() {
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <Badge variant="secondary" className="text-[10px] font-mono">
+                <Badge variant="secondary" className="text-[10px] font-mono hidden sm:inline-flex">
                   Simplified Account View
                 </Badge>
+                <AddModelSheet onAdd={addModel} />
               </div>
-
-
             </div>
 
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-              {filteredModels.map((model) => (
-                <ModelCard
-                  key={model.id}
-                  model={model}
-                  onRemove={removeModel}
-                  onLogUsage={logUsage}
-                />
-              ))}
-            </div>
+            {filteredModels.length === 0 ? (
+              <div className="flex min-h-[220px] flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-border/70 bg-card/30 p-8 text-center backdrop-blur-xl">
+                <SparklesIcon className="size-8 text-muted-foreground/60" />
+                <div className="flex flex-col gap-1">
+                  <h3 className="text-sm font-semibold">No plan cards active for this view</h3>
+                  <p className="text-xs text-muted-foreground">
+                    Click below to restore DeepSeek, Google Pro, Claude, or OpenAI plan cards.
+                  </p>
+                </div>
+                <AddModelSheet onAdd={addModel} />
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                {filteredModels.map((model) => (
+                  <ModelCard
+                    key={model.id}
+                    model={model}
+                    onRemove={removeModel}
+                    onLogUsage={logUsage}
+                  />
+                ))}
+              </div>
+            )}
+
           </div>
 
           <div className="flex flex-col gap-6">
